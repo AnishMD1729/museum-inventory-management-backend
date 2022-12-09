@@ -11,12 +11,16 @@ import org.springframework.web.bind.annotation.*;
 import java.util.Optional;
 import java.util.UUID;
 
+@CrossOrigin
 @RestController
 @RequestMapping("/api/rfid_tag")
 public class RFIDTagController {
 
+    @Autowired
     private RFIDTagRepository rfidTagRepository;
+    @Autowired
     private NotificationController notificationController;
+    @Autowired
     private PersonRepository personRepository;
 
     @GetMapping("/{id}")
@@ -44,19 +48,16 @@ public class RFIDTagController {
         rfidTagRepository.deleteById(id);
     }
 
-    @PutMapping("/api/rfid-tags/{id}/{personID}/update-storage-coordinates")
+    @PutMapping("/{id}/update-storage-coordinates")
     public ResponseEntity<RFIDTag> updateStorageCoordinates(@RequestParam String storageCoordinates,
-                                                            @PathVariable UUID id, @PathVariable UUID personID) {
+                                                            @PathVariable UUID id) {
         Optional<RFIDTag> rfidTagOptional = rfidTagRepository.findById(id);
-        Optional<Person> personOptional = personRepository.findById(personID);
         if (rfidTagOptional.isPresent()) {
             RFIDTag rfidTag = rfidTagOptional.get();
             rfidTag.setStorageCoordinates(storageCoordinates);
             rfidTag = rfidTagRepository.save(rfidTag);
 
-            if (personOptional.isPresent()) {
-                notificationController.sendEmail(personOptional.get(), storageCoordinates);
-            }
+            notificationController.sendEmail(storageCoordinates);
             return ResponseEntity.ok(rfidTag);
         }
 

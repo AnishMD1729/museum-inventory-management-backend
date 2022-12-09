@@ -1,5 +1,7 @@
 package com.group9.museuminventory.models;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
@@ -18,17 +20,19 @@ public class RFIDTag {
     private Date createdAt;
     private Date updatedAt;
 
-    @OneToOne(mappedBy = "rfidTag", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @JsonIgnore
+    @OneToOne(mappedBy = "rfidTag")
     private Artifact artifact;
 
     public RFIDTag() {
 
     }
 
-    public RFIDTag(UUID id, String storageCoordinates) {
+    public RFIDTag(UUID id, String storageCoordinates, Artifact artifact) {
         this.id = id;
         this.storageCoordinates = storageCoordinates;
         this.createdAt = new Date();
         this.updatedAt = new Date();
+        this.artifact = artifact;
     }
 }
